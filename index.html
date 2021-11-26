@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <center>
+        <h1>Users</h1>
+        <div id="mainBody"></div>
+    </center>
+    <style>
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            transition: 0.3s;
+            width: 15%;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            padding: 2px 16px;
+        }
+    </style>
+    <script>
+        let mainBody = document.getElementById("mainBody");
+        fetch('https://iotserver.us-south.cf.appdomain.cloud/users')
+            .then(response => response.json())
+            .then(data => users = data)
+            .then(() => users.forEach((item) => {
+
+                let outerDiv = document.createElement("div");
+                let innerDiv = document.createElement("div");
+                outerDiv.className = "card";
+                innerDiv.className = "container";
+
+                let xhr = new XMLHttpRequest();
+                xhr.open('PUT', 'https://iotServer.us-south.cf.appdomain.cloud/update_access_status');
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+                let button = document.createElement("button");
+                let body = {
+                    "username": item.username,
+                    "access_status": !item.access_status
+                };
+
+                button.innerText = "Change access status";
+                button.onclick = function () {
+                    console.log(JSON.stringify(body));
+                    xhr.send(JSON.stringify(body));
+                };
+                
+                let h4 = document.createElement("h4");
+                let b = document.createElement("b");
+                let p = document.createElement("p");
+
+                b.innerText = item.username;
+                b.style.fontSize = "x-large";
+
+                if (item.access_status) {
+                    p.innerHTML = 'Access allowed'.bold();
+                    outerDiv.style.backgroundColor = "lightblue";
+                } else {
+                    p.innerHTML = 'Access denied'.bold();
+                    outerDiv.style.backgroundColor = "lightcoral";
+                }
+
+                h4.appendChild(b);
+                innerDiv.appendChild(h4);
+                innerDiv.appendChild(p);
+                innerDiv.appendChild(button);
+                outerDiv.appendChild(innerDiv);
+                mainBody.appendChild(outerDiv);
+                mainBody.appendChild(document.createElement("br"));
+            }))
+            .then(() => console.log('Ok!'));
+
+    </script>
+</body>
+
+</html>
